@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# High By The Beach
+
+A custom Shopify storefront built with Next.js 16, React 19, TypeScript, and Tailwind CSS v4. No third-party Shopify SDK — uses the Storefront API directly via a lightweight GraphQL fetch wrapper.
+
+## Features
+
+- Product listing, collection pages, and individual product pages with image gallery and variant selection
+- Shopping cart (slide-out drawer, add/remove/update via Server Actions)
+- Checkout flow with order confirmation page
+- Wishlist (client-side, persisted in localStorage)
+- Search with two modes:
+  - **Simple** — keyword search via Shopify Storefront API
+  - **AI** — natural language search powered by Claude (extracts filters like product type, price range, and tags from plain English; price adjectives like "cheap" or "luxury" are interpreted relative to the product category)
+- Sidebar filters (product type, price range) and sort controls
+- Mobile-responsive layout with hamburger menu and dark mode support
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS v4
+- **Data**: Shopify Storefront API (GraphQL)
+- **AI search**: Anthropic Claude API (claude-haiku-4-5)
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repo and install dependencies:
+
+```bash
+npm install
+```
+
+2. Copy the env file and fill in your Shopify credentials:
+
+```bash
+cp .env.example .env.local
+```
+
+```
+SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-storefront-access-token
+ANTHROPIC_API_KEY=your-anthropic-api-key   # only needed for AI search
+```
+
+3. Run the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+app/                   # Next.js App Router pages
+  actions/             # Server Actions (cart, search, checkout)
+  checkout/            # Checkout and order confirmation pages
+  collections/         # Collection pages
+  products/[handle]/   # Product detail page
+  search/              # Search page
+  wishlist/            # Wishlist page
+components/            # UI components
+  cart/                # Cart drawer
+  collection/          # Filter sidebar and collection layout
+  header/              # Nav, mobile menu, cart/wishlist buttons
+  product/             # Product card, image, wishlist button
+  search/              # Search input and mode toggle
+lib/shopify/           # Shopify Storefront API client and queries
+context/               # Cart and Wishlist React context providers
+```

@@ -149,8 +149,29 @@ export default function AllProductsSidebar({
     router.push(`${pathname}?${params.toString()}`);
   }
 
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
-    <aside className="w-52 flex-shrink-0">
+    <aside className="w-full md:w-52 md:flex-shrink-0">
+      {/* Mobile toggle */}
+      <button
+        onClick={() => setMobileOpen((v) => !v)}
+        className="mb-4 flex w-full items-center justify-between rounded-lg border border-zinc-200 px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900 md:hidden"
+      >
+        <span>Filters {hasFilters ? "(active)" : ""}</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className={`h-4 w-4 transition-transform ${mobileOpen ? "rotate-180" : ""}`}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
+
+      <div className={`${mobileOpen ? "block" : "hidden"} md:block`}>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-semibold">Filters</h2>
         {hasFilters && (
@@ -233,6 +254,7 @@ export default function AllProductsSidebar({
         >
           Apply
         </button>
+      </div>
       </div>
     </aside>
   );

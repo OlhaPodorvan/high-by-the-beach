@@ -51,3 +51,8 @@ export async function removeFromCartAction(lineId: string): Promise<Cart> {
   if (!cartId) throw new Error("No cart found");
   return shopifyCart.removeFromCart(cartId, [lineId]);
 }
+
+export async function clearCartAction(): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.delete(CART_COOKIE);
+}

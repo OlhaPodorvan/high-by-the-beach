@@ -1,29 +1,6 @@
 import { shopifyFetch } from "./client";
-import type { Collection, Product, ProductFilter, ShopifyImage } from "./types";
-
-type RawProduct = {
-  id: string;
-  title: string;
-  handle: string;
-  description: string;
-  descriptionHtml: string;
-  featuredImage: ShopifyImage | null;
-  images: { nodes: ShopifyImage[] };
-  priceRange: {
-    minVariantPrice: { amount: string; currencyCode: string };
-    maxVariantPrice: { amount: string; currencyCode: string };
-  };
-  options: { id: string; name: string; values: string[] }[];
-  variants: {
-    nodes: {
-      id: string;
-      title: string;
-      availableForSale: boolean;
-      price: { amount: string; currencyCode: string };
-      selectedOptions: { name: string; value: string }[];
-    }[];
-  };
-};
+import type { Collection, Product, ProductFilter, RawProduct, ShopifyImage } from "./types";
+import { normalizeProduct } from "./products";
 
 type RawCollection = {
   id: string;
@@ -36,10 +13,6 @@ type RawCollection = {
     filters: ProductFilter[];
   };
 };
-
-function normalizeProduct(raw: RawProduct): Product {
-  return { ...raw, images: raw.images.nodes, variants: raw.variants.nodes };
-}
 
 const COLLECTIONS_QUERY = `
   query GetCollections {

@@ -1,35 +1,11 @@
 import { shopifyFetch } from "./client";
-import type { Product, ShopifyImage } from "./types";
+import type { Product, RawProduct } from "./types";
 
-type RawProduct = {
-  id: string;
-  title: string;
-  handle: string;
-  description: string;
-  descriptionHtml: string;
-  featuredImage: ShopifyImage | null;
-  images: { nodes: ShopifyImage[] };
-  priceRange: {
-    minVariantPrice: { amount: string; currencyCode: string };
-    maxVariantPrice: { amount: string; currencyCode: string };
-  };
-  options: { id: string; name: string; values: string[] }[];
-  variants: {
-    nodes: {
-      id: string;
-      title: string;
-      availableForSale: boolean;
-      price: { amount: string; currencyCode: string };
-      selectedOptions: { name: string; value: string }[];
-    }[];
-  };
-};
-
-function normalizeProduct(raw: RawProduct): Product {
+export function normalizeProduct(raw: RawProduct): Product {
   return { ...raw, images: raw.images.nodes, variants: raw.variants.nodes };
 }
 
-const PRODUCT_FRAGMENT = `
+export const PRODUCT_FRAGMENT = `
   fragment ProductFields on Product {
     id
     title

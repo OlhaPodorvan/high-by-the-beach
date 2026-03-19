@@ -102,6 +102,24 @@ export type ProductFilter = {
   values: FilterValue[];
 };
 
+export type RawProduct = {
+  id: string;
+  title: string;
+  handle: string;
+  description: string;
+  descriptionHtml: string;
+  featuredImage: ShopifyImage | null;
+  images: { nodes: ShopifyImage[] };
+  priceRange: {
+    minVariantPrice: Money;
+    maxVariantPrice: Money;
+  };
+  options: ProductOption[];
+  variants: {
+    nodes: ProductVariant[];
+  };
+};
+
 export type ShopifyFetchOptions<V = Record<string, unknown>> = {
   query: string;
   variables?: V;

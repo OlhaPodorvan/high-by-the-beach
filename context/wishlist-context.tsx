@@ -4,7 +4,6 @@ import {
   createContext,
   useContext,
   useState,
-  useEffect,
   type ReactNode,
 } from "react";
 import type { ShopifyImage } from "@/lib/shopify/types";
@@ -29,14 +28,15 @@ const WishlistContext = createContext<WishlistContextType | null>(null);
 const STORAGE_KEY = "wishlist";
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<WishlistItem[]>([]);
-
-  useEffect(() => {
+  const [items, setItems] = useState<WishlistItem[]>(() => {
+    if (typeof window === "undefined") return [];
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setItems(JSON.parse(stored));
-    } catch {}
-  }, []);
+      return stored ? (JSON.parse(stored) as WishlistItem[]) : [];
+    } catch {
+      return [];
+    }
+  });
 
   function persist(next: WishlistItem[]) {
     setItems(next);

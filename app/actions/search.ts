@@ -19,17 +19,22 @@ export async function aiSearchAction(
 ): Promise<AISearchResult> {
   try {
     const response = await client.messages.create({
-      model: "claude-opus-4-6",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 256,
       messages: [
         {
           role: "user",
-          content: `Extract structured filters from this product search query.
+          content: `Extract structured filters from this product search query for a beach store.
 Available product types: ${availableProductTypes.join(", ")}.
 Query: "${rawQuery}"
 Return JSON only, no explanation: { "cleanQuery": string, "productType"?: string, "minPrice"?: number, "maxPrice"?: number, "tags"?: string[] }
-cleanQuery should be the query with price/filter words removed (e.g. "under $50", "cheap", "less than", "beach themed" → stripped).
-productType must exactly match one of the available types or be omitted.`,
+
+Rules:
+- First, mentally correct any typos or misspellings in the query before applying all other rules (e.g. "budjet" → "budget", "cheep" → "cheap").
+- cleanQuery: the core product keywords only, strip all price/filter language (including typo-corrected price words like "budjet" → strip as "budget").
+- productType: match abbreviations, synonyms, and partial names to the closest available type (e.g. "flips" → "Flip Flops", "sunnies" → "Sunglasses", "trunks" → "Swim Trunks"). Must exactly match one of the available types or be omitted.
+- Price adjectives: infer a realistic price range based on the product type and typical market prices. For example, "cheap sunglasses" → maxPrice ~20, "cheap surfboard" → maxPrice ~200, "luxury towel" → minPrice ~80. Apply this to the corrected version of any misspelled price word. Explicit amounts like "under $50" → maxPrice 50.
+- tags: relevant descriptive tags inferred from the query (e.g. "waterproof", "kids", "UV protection").`,
         },
       ],
     });

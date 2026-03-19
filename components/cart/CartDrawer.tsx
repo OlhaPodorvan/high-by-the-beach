@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCart } from "@/context/cart-context";
 import CartLineItem from "./CartLineItem";
 
@@ -66,12 +67,13 @@ export default function CartDrawer() {
                 {cart.cost.subtotalAmount.currencyCode}
               </span>
             </div>
-            <a
-              href={cart.checkoutUrl}
+            <Link
+              href="/checkout"
+              onClick={closeCart}
               className="block w-full rounded-full bg-zinc-900 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
             >
               Checkout
-            </a>
+            </Link>
           </div>
         )}
       </div>

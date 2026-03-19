@@ -1,12 +1,19 @@
+import { Suspense } from "react";
 import { getProducts } from "@/lib/shopify/products";
 import ProductCard from "@/components/ProductCard";
+import SearchInput from "@/components/search/SearchInput";
 
 export default async function Home() {
   const products = await getProducts(8);
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
-      <h1 className="mb-8 text-3xl font-semibold">All Products</h1>
+      <div className="mb-8">
+        <Suspense fallback={null}>
+          <SearchInput defaultValue="" />
+        </Suspense>
+      </div>
+      <h1 className="mb-6 text-3xl font-semibold">All Products</h1>
 
       {products.length === 0 ? (
         <p className="text-zinc-500">No products found.</p>

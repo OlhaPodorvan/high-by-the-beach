@@ -7,7 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import SortSelect from "@/components/collection/SortSelect";
 import AllProductsSidebar from "@/components/collection/AllProductsSidebar";
 import ActiveFiltersBar from "@/components/collection/ActiveFiltersBar";
-import SearchModeToggle from "@/components/search/SearchModeToggle";
+import SearchInput from "@/components/search/SearchInput";
 import { aiSearchAction } from "@/app/actions/search";
 
 type Props = {
@@ -60,6 +60,13 @@ export default async function SearchPage({ searchParams }: Props) {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
+      {/* Full-width search input — primary entry point on mobile */}
+      <div className="mb-8">
+        <Suspense fallback={null}>
+          <SearchInput defaultValue={rawQuery} />
+        </Suspense>
+      </div>
+
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-semibold">
@@ -72,24 +79,19 @@ export default async function SearchPage({ searchParams }: Props) {
           )}
         </div>
 
-        <div className="flex items-center gap-3">
+        {rawQuery && (
           <Suspense fallback={null}>
-            <SearchModeToggle />
+            <SortSelect />
           </Suspense>
-          {rawQuery && (
-            <Suspense fallback={null}>
-              <SortSelect />
-            </Suspense>
-          )}
-        </div>
+        )}
       </div>
 
       {!rawQuery && (
-        <p className="text-zinc-500">Enter a search term above to find products.</p>
+        <p className="text-zinc-500">Enter a search term to find products.</p>
       )}
 
       {rawQuery && (
-        <div className="flex gap-8">
+        <div className="flex flex-col gap-6 md:flex-row md:gap-8">
           <Suspense fallback={null}>
             <AllProductsSidebar productTypes={productTypes} />
           </Suspense>

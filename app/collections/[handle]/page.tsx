@@ -6,6 +6,7 @@ import { parseCollectionSort } from "@/lib/shopify/sort";
 import ProductCard from "@/components/ProductCard";
 import FilterSidebar from "@/components/collection/FilterSidebar";
 import SortSelect from "@/components/collection/SortSelect";
+import SearchInput from "@/components/search/SearchInput";
 
 type Props = {
   params: Promise<{ handle: string }>;
@@ -42,6 +43,11 @@ export default async function CollectionPage({ params, searchParams }: Props) {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
+      <div className="mb-8">
+        <Suspense fallback={null}>
+          <SearchInput defaultValue="" />
+        </Suspense>
+      </div>
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-semibold">{collection.title}</h1>
         <Suspense fallback={null}>
@@ -49,7 +55,7 @@ export default async function CollectionPage({ params, searchParams }: Props) {
         </Suspense>
       </div>
 
-      <div className="flex gap-8">
+      <div className="flex flex-col gap-6 md:flex-row md:gap-8">
         <Suspense fallback={null}>
           <FilterSidebar filters={availableFilters} />
         </Suspense>

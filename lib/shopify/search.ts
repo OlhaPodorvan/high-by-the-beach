@@ -1,29 +1,6 @@
 import { shopifyFetch } from "./client";
-import type { Product, ShopifyImage } from "./types";
-
-type RawProduct = {
-  id: string;
-  title: string;
-  handle: string;
-  description: string;
-  descriptionHtml: string;
-  featuredImage: ShopifyImage | null;
-  images: { nodes: ShopifyImage[] };
-  priceRange: {
-    minVariantPrice: { amount: string; currencyCode: string };
-    maxVariantPrice: { amount: string; currencyCode: string };
-  };
-  options: { id: string; name: string; values: string[] }[];
-  variants: {
-    nodes: {
-      id: string;
-      title: string;
-      availableForSale: boolean;
-      price: { amount: string; currencyCode: string };
-      selectedOptions: { name: string; value: string }[];
-    }[];
-  };
-};
+import type { Product, RawProduct } from "./types";
+import { normalizeProduct, PRODUCT_FRAGMENT } from "./products";
 
 type SearchData = {
   search: {
@@ -39,7 +16,7 @@ export type SearchFilters = {
   tags?: string[];
 };
 
-function buildProductFilters(filters: SearchFilters): Record<string, unknown>[] {
+export function buildProductFilters(filters: SearchFilters): Record<string, unknown>[] {
   const result: Record<string, unknown>[] = [];
   if (filters.productType) result.push({ productType: filters.productType });
   if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
@@ -54,32 +31,11 @@ const SEARCH_QUERY = `
     search(query: $query, first: $first, types: PRODUCT, productFilters: $productFilters) {
       totalCount
       nodes {
-        ... on Product {
-          id
-          title
-          handle
-          description
-          descriptionHtml
-          featuredImage { url altText width height }
-          images(first: 20) { nodes { url altText width height } }
-          priceRange {
-            minVariantPrice { amount currencyCode }
-            maxVariantPrice { amount currencyCode }
-          }
-          options { id name values }
-          variants(first: 100) {
-            nodes {
-              id
-              title
-              availableForSale
-              price { amount currencyCode }
-              selectedOptions { name value }
-            }
-          }
-        }
+        ... on Product { ...ProductFields }
       }
     }
   }
+  ${PRODUCT_FRAGMENT}
 `;
 
 export async function searchProducts(
@@ -100,10 +56,6 @@ export async function searchProducts(
 
   return {
     totalCount: data.search.totalCount,
-    products: data.search.nodes.map((p) => ({
-      ...p,
-      images: p.images.nodes,
-      variants: p.variants.nodes,
-    })),
+    products: data.search.nodes.map(normalizeProduct),
   };
 }

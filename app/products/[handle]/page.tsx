@@ -5,6 +5,7 @@ import { getProduct } from "@/lib/shopify/products";
 import Gallery from "@/components/product/Gallery";
 import VariantSelector from "@/components/product/VariantSelector";
 import AddToCartButton from "@/components/cart/AddToCartButton";
+import WishlistProductButton from "@/components/product/WishlistProductButton";
 
 type Props = {
   params: Promise<{ handle: string }>;
@@ -84,6 +85,17 @@ export default async function ProductPage({ params, searchParams }: Props) {
           <AddToCartButton
             variantId={selectedVariant?.id ?? ""}
             availableForSale={selectedVariant?.availableForSale ?? false}
+          />
+
+          <WishlistProductButton
+            product={{
+              id: product.id,
+              handle: product.handle,
+              title: product.title,
+              featuredImage: product.featuredImage,
+              price,
+              currencyCode: currency,
+            }}
           />
 
           {product.descriptionHtml && (
