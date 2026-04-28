@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getPage } from "@/lib/shopify/page";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 type Props = {
   params: Promise<{ handle: string }>;
@@ -26,7 +27,7 @@ export default async function Page({ params }: Props) {
       <h1 className="mb-8 text-3xl font-semibold">{page.title}</h1>
       <div
         className="prose prose-zinc dark:prose-invert max-w-none"
-        dangerouslySetInnerHTML={{ __html: page.body }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.body) }}
       />
     </main>
   );

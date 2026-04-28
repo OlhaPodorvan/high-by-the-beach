@@ -14,7 +14,8 @@ async function adminFetch<T>(path: string, options?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`Shopify Admin API error ${res.status}: ${text}`);
+    console.error(`Shopify Admin API error ${res.status}: ${text}`);
+    throw new Error(`Shopify Admin API error: ${res.status}`);
   }
 
   return res.json() as Promise<T>;

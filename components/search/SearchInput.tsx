@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, SubmitEvent } from "react";
 
 export default function SearchInput({ defaultValue }: { defaultValue: string }) {
   const router = useRouter();
@@ -18,14 +18,14 @@ export default function SearchInput({ defaultValue }: { defaultValue: string }) 
     if (aiMode) aiInputRef.current?.focus();
   }, [aiMode]);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const q = inputRef.current?.value.trim();
     if (!q) return;
     router.push(`/search?q=${encodeURIComponent(q)}&mode=simple`);
   }
 
-  function handleAISubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleAISubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const q = aiInputRef.current?.value.trim();
     if (!q) return;

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getProduct } from "@/lib/shopify/products";
+import { sanitizeHtml } from "@/lib/sanitize";
 import Gallery from "@/components/product/Gallery";
 import VariantSelector from "@/components/product/VariantSelector";
 import AddToCartButton from "@/components/cart/AddToCartButton";
@@ -101,7 +102,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
           {product.descriptionHtml && (
             <div
               className="prose prose-sm max-w-none text-zinc-600 dark:text-zinc-400"
-              dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.descriptionHtml) }}
             />
           )}
         </div>

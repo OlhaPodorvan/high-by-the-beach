@@ -1,6 +1,7 @@
 "use server";
 
 import Anthropic from "@anthropic-ai/sdk";
+import { headers } from "next/headers";
 
 export type AISearchResult = {
   /** Cleaned query with price/filter language stripped out, passed to Shopify text search */
@@ -13,10 +14,29 @@ export type AISearchResult = {
 
 const client = new Anthropic();
 
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(ip: string, max = 30, windowMs = 60_000): boolean {
+  const now = Date.now();
+  const entry = rateLimitStore.get(ip) ?? { count: 0, resetAt: now + windowMs };
+  if (now > entry.resetAt) { entry.count = 0; entry.resetAt = now + windowMs; }
+  if (entry.count >= max) return false;
+  entry.count++;
+  rateLimitStore.set(ip, entry);
+  return true;
+}
+
 export async function aiSearchAction(
   rawQuery: string,
   availableProductTypes: string[]
 ): Promise<AISearchResult> {
+  if (!rawQuery) return { cleanQuery: "" };
+  const query = rawQuery.slice(0, 200);
+
+  const headerStore = await headers();
+  const ip = headerStore.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  if (!checkRateLimit(ip)) throw new Error("Too many requests. Please slow down.");
+
   try {
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
@@ -26,7 +46,7 @@ export async function aiSearchAction(
           role: "user",
           content: `Extract structured filters from this product search query for a beach store.
 Available product types: ${availableProductTypes.join(", ")}.
-Query: "${rawQuery}"
+Query: "${query}"
 Return JSON only, no explanation: { "cleanQuery": string, "productType"?: string, "minPrice"?: number, "maxPrice"?: number, "tags"?: string[] }
 
 Rules:
@@ -48,7 +68,7 @@ Rules:
 
     const parsed = JSON.parse(jsonMatch[0]) as AISearchResult;
     return {
-      cleanQuery: parsed.cleanQuery || rawQuery,
+      cleanQuery: parsed.cleanQuery || query,
       productType: parsed.productType,
       minPrice: parsed.minPrice,
       maxPrice: parsed.maxPrice,
@@ -56,6 +76,6 @@ Rules:
     };
   } catch (err) {
     console.error("AI search error:", err);
-    return { cleanQuery: rawQuery };
+    return { cleanQuery: query };
   }
 }

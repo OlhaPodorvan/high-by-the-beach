@@ -8,7 +8,7 @@ const CART_COOKIE = "cartId";
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
+  sameSite: "strict" as const,
   maxAge: 60 * 60 * 24 * 30, // 30 days
   path: "/",
 };
@@ -27,10 +27,15 @@ async function getCartId(): Promise<string> {
   return newCart.id;
 }
 
+function isValidShopifyId(id: string): boolean {
+  return /^gid:\/\/shopify\/[A-Za-z]+\/\d+$/.test(id);
+}
+
 export async function addToCartAction(
   variantId: string,
   quantity = 1
 ): Promise<Cart> {
+  if (!isValidShopifyId(variantId)) throw new Error("Invalid variant ID");
   const cartId = await getCartId();
   return shopifyCart.addToCart(cartId, [{ merchandiseId: variantId, quantity }]);
 }
